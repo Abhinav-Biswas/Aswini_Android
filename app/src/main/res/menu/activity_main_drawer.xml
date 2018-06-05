@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@android:drawable/btn_star_big_off"
+            android:title="Home" />
+
+        <item
+            android:id="@+id/nav_ecmail"
+            android:title="EC-Mail" />
+
+        <item
+            android:id="@+id/nav_att"
+            android:title="Attendance Status" />
+
+        <item
+            android:id="@+id/nav_emp"
+            android:title="Employees Directory" />
+
+        <item
+            android:id="@+id/nav_ess"
+            android:title="ESS/MSS Services" />
+
+        <item
+            android:id="@+id/nav_pay"
+            android:title="Payslips" />
+
+        <item
+            android:id="@+id/nav_bookmark"
+            android:icon="@drawable/ic_bookmark_black_24dp"
+            android:title="Personal Bookmarks" />
+    </group>
+
+</menu>

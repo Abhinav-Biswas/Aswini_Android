@@ -1,0 +1,1 @@
+No dots in apk file name
