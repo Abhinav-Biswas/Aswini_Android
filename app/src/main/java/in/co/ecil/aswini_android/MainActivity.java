@@ -104,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        webview.clearCache(true);
-        webview.clearHistory();
+        //webview.clearCache(true);
+        //webview.clearHistory();
         webview.setDownloadListener(new DownloadListener()
         {
 

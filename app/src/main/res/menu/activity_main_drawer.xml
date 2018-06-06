@@ -5,11 +5,11 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@android:drawable/btn_star_big_off"
-            android:title="Home" />
+            android:title="Home Page" />
 
         <item
             android:id="@+id/nav_ecmail"
-            android:title="EC-Mail" />
+            android:title="EC-Mail App" />
 
         <item
             android:id="@+id/nav_att"
@@ -25,7 +25,7 @@
 
         <item
             android:id="@+id/nav_pay"
-            android:title="Payslips" />
+            android:title="Payroll Services" />
 
         <item
             android:id="@+id/nav_bookmark"
