@@ -5,11 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -29,6 +29,7 @@ import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
@@ -38,10 +39,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -60,13 +57,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     NavigationView navigationView;
     private Intent in;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("MYONCREATE", "On Create .....");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        navigationView = findViewById(R.id.nav_view);
+        myLinearLayout = findViewById(R.id.main_content);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setTitle(R.string.app_long_name);
@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportActionBar().setTitle(getIntent().getStringExtra("title"));
         }
 
-        webview =(WebView)findViewById(R.id.webView);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        webview = findViewById(R.id.webView);
+        progressBar = findViewById(R.id.progressBar);
         progressBar.setMax(100);
 
         webview.setWebViewClient(new myWebViewClient());
@@ -86,7 +86,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         webview.getSettings().setJavaScriptEnabled(true);
         webview.getSettings().setDomStorageEnabled(true);
         webview.setOverScrollMode(WebView.OVER_SCROLL_NEVER);
-        webview.loadUrl(url);
+        webview.getSettings().setSupportZoom(true);
+        webview.getSettings().setBuiltInZoomControls(true);
+        webview.getSettings().setDisplayZoomControls(false);
+        webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webview.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        if (Build.VERSION.SDK_INT >= 19) {
+            // chromium, enable hardware acceleration
+            webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            // older android version, disable hardware acceleration
+            webview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+        webview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        //webview.getSettings().setAppCacheMaxSize( 10 * 1024 * 1024 ); // 10MB
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
 
@@ -97,18 +110,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
-        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        myLinearLayout = findViewById(R.id.main_content);
 
-
-        webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         //webview.clearCache(true);
         //webview.clearHistory();
         webview.setDownloadListener(new DownloadListener()
         {
-
             @Override
             public void onDownloadStart(String url, String userAgent,
                                         String contentDisposition, String mimeType,
@@ -138,10 +145,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Toast.LENGTH_LONG).show();
             }});
 
-        webview.getSettings().setSupportZoom(true);
-        webview.getSettings().setBuiltInZoomControls(true);
-        webview.getSettings().setDisplayZoomControls(false);
+        webview.loadUrl(url);
+        Log.d("MYAFTERLOAD", "On Load .....");
+    }
 
+    @Override
+    protected void onStart() {
+        Log.d("MYONSTART", "On Start .....");
+        super.onStart();
     }
 
     public  class myWebViewClient extends WebViewClient{
