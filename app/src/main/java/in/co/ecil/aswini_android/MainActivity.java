@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("MYONCREATE", "On Create .....");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         navigationView = findViewById(R.id.nav_view);
@@ -147,12 +146,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         webview.loadUrl(url);
         Log.d("MYAFTERLOAD", "On Load .....");
-    }
-
-    @Override
-    protected void onStart() {
-        Log.d("MYONSTART", "On Start .....");
-        super.onStart();
     }
 
     public  class myWebViewClient extends WebViewClient{
