@@ -1,6 +1,7 @@
 package in.co.ecil.aswini_android;
 
 import android.app.DownloadManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,7 +10,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -29,6 +29,8 @@ import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -148,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("MYAFTERLOAD", "On Load .....");
     }
 
-    public  class myWebViewClient extends WebViewClient{
+    public  class myWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             invalidateOptionsMenu();
             return true;
         }
+
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
@@ -164,8 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (url.contentEquals("http://aswini.ecil.co.in/")) {
                 getSupportActionBar().setTitle(R.string.app_long_name);
-            }
-            else {
+            } else {
                 getSupportActionBar().setTitle(view.getTitle());
             }
 
@@ -184,14 +186,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         "document.getElementsByClassName('menu-toggle')[0].style.fontSize = '30px';" +
                         "document.getElementById('social-links').style.display = 'none';" +
                         "} void 0");
-            }
-            else if (url.contains("http://aswini.ecil.co.in/teldir/public")) {
+            } else if (url.contains("http://aswini.ecil.co.in/teldir/public")) {
                 view.getSettings().setUseWideViewPort(true);
-            }
-            else if (url.contains("https://ecprdci.ecil.co.in:8443/nwbc")) {
+            } else if (url.contains("https://ecprdci.ecil.co.in:8443/nwbc")) {
                 view.getSettings().setUseWideViewPort(true);
             }
         }
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
@@ -224,6 +225,103 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onReceivedError(view, errorCode, description, failingUrl);
         }
 
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+                if (url.contains("Integrated_Security_System_Tyre_Killer.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.isstk));
+                }
+                if (url.contains("Access_Control_System.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.acs));
+                }
+                if (url.contains("Antena_Platform_Unit_for_Tejas.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.apuft));
+                }
+                if (url.contains("NPR_Card_Making_Unit_at_Tirupati.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.ncmuat));
+                }
+                if (url.contains("Electronics_Fuzes_for_Artillery_Guns.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.effag));
+                }
+                if (url.contains("Hassan_Antennas_-_Banglore.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.hab));
+                }
+                if (url.contains("Limb_Monitor.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.lm));
+                }
+                if (url.contains("Mobile_system_for_Missile_Checkout.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.msfmc));
+                }
+                if (url.contains("Tarapur_Control_Room.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.tcr));
+                }
+                if (url.contains("32m_DSN_Antenna_for_Mars_Orbiter_Mission.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.dafmom));
+                }
+                if (url.contains("EVM_Mark_5.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(Uri.parse(url)), "UTF-8", getResources().openRawResource(R.raw.em5));
+                }
+                return super.shouldInterceptRequest(view, url);
+            }
+            else {
+                if (request.getUrl().getEncodedPath().contains("Integrated_Security_System_Tyre_Killer.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.isstk));
+                }
+                if (request.getUrl().getEncodedPath().contains("Access_Control_System.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.acs));
+                }
+                if (request.getUrl().getEncodedPath().contains("Antena_Platform_Unit_for_Tejas.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.apuft));
+                }
+                if (request.getUrl().getEncodedPath().contains("NPR_Card_Making_Unit_at_Tirupati.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.ncmuat));
+                }
+                if (request.getUrl().getEncodedPath().contains("Electronics_Fuzes_for_Artillery_Guns.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.effag));
+                }
+                if (request.getUrl().getEncodedPath().contains("Hassan_Antennas_-_Banglore.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.hab));
+                }
+                if (request.getUrl().getEncodedPath().contains("Limb_Monitor.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.lm));
+                }
+                if (request.getUrl().getEncodedPath().contains("Mobile_system_for_Missile_Checkout.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.msfmc));
+                }
+                if (request.getUrl().getEncodedPath().contains("Tarapur_Control_Room.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.tcr));
+                }
+                if (request.getUrl().getEncodedPath().contains("32m_DSN_Antenna_for_Mars_Orbiter_Mission.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.dafmom));
+                }
+                if (request.getUrl().getEncodedPath().contains("EVM_Mark_5.jpg")) {
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    return new WebResourceResponse(contentResolver.getType(request.getUrl()), "UTF-8", getResources().openRawResource(R.raw.em5));
+                }
+                return super.shouldInterceptRequest(view, request);
+            }
+        }
     }
 
     private class myWebChromeClient extends WebChromeClient {

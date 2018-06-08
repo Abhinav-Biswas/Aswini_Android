@@ -110,11 +110,6 @@ public class BookmarkActivity extends AppCompatActivity {
 
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
         protected String doInBackground(String... args) {
             // updating UI from Background Thread
             runOnUiThread(new Runnable() {
