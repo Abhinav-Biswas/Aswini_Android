@@ -16,8 +16,17 @@
         android:elevation="2dp"
         tools:visibility="visible" />
 
+    <TextView
+        android:id="@+id/SplashText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="\n\n\n\nAttempting Secure Connection \n via EC SSL VPN..."
+        android:visibility="visible" />
+
     <WebView
         android:id="@+id/webView"
+        android:visibility="gone"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"

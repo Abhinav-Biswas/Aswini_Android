@@ -19,7 +19,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -147,7 +146,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }});
 
         webview.loadUrl(url);
-        Log.d("MYAFTERLOAD", "On Load .....");
     }
 
     public  class myWebViewClient extends WebViewClient {
@@ -162,10 +160,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
+            findViewById(R.id.SplashText).setVisibility(View.GONE);
+            findViewById(R.id.webView).setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             progressBar.setProgress(100);
 
-            if (url.contentEquals("http://aswini.ecil.co.in/")) {
+            if (url.contentEquals("http://aswini.ecil.co.in/") || url.contentEquals("http://aswini.ecil.co.in")) {
                 getSupportActionBar().setTitle(R.string.app_long_name);
             } else {
                 getSupportActionBar().setTitle(view.getTitle());
@@ -218,6 +218,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onClick(DialogInterface dialog, int which) {
                     finish();
                     startActivity(getIntent());
+                }
+            });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Open EC SSL VPN App", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    in = getPackageManager().getLaunchIntentForPackage("de.blinkt.openvpn");
+                    if (in != null) {
+                        // We found the activity now start the activity
+                        in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(in);
+                    } else {
+                        // Bring user to the market or let them choose an app?
+                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                        alertDialog.setTitle("EC SSL VPN App Not Installed !!!");
+                        alertDialog.setMessage("Please install & configure EC SSL VPN Android App or Contact the administrator.");
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+
+                        alertDialog.show();
+                    }
+                    finish();
                 }
             });
 
