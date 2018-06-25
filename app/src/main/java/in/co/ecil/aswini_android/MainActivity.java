@@ -441,24 +441,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (item.getItemId() == R.id.action_about) {
             String appName = getString(R.string.app_long_name);
             int year = Calendar.getInstance().get(Calendar.YEAR);
-            StringBuilder html = new StringBuilder()
-                    .append("<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />")
-                    .append("<title>About Aswini App</title>")
-                    .append("<img src=\"file:///android_asset/ic_launcher.png\" alt=\"").append(appName).append("\"/>")
-                    .append("<h1>" + appName + " 1.0</h1>")
-                    .append("<p>Copyright " + year + " - 2025 ECIL</p>")
-                    .append("<big><b>Author: </b></big>Abhinav Biswas, Technical Officer, ITSD")
-                    .append("<p><b>Electronics Corporation of India Limited</b> (ECIL)<br>")
-                    .append("Department of Atomic Energy, Government of India")
-                    .append("</p><p>")
-                    .append("</p><hr/><p>")
-                    .append("</p><hr/><p>")
-                    .append("<b>Aswini App</b> is a secure VPN-only Intranet Portal for Android Mobile Operating System, developed by IT Services Division (ITSD) of Electronics Corporation of India Limited (ECIL), a Govt. of India (Dept. of Atomic Energy) Enterprise. <br><br>This App must be used by ECIL employees only.\n" +
-                            "<br><br><br>\n")
-                    .append("For further details contact Administrator:<br>administrator@ecil.co.in")
-                    .append("<br><br><hr/><h2>Change Log</h2><ul><li>First Version of Aswini Android App.</li></ul>");
 
-            webview.loadDataWithBaseURL("file:///android_res/drawable/", html.toString(), "text/html", "utf-8", null);
+            String html = "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><title>About Aswini App</title>" +
+                    "<img src=\"file:///android_asset/ic_launcher.png\" alt=\"" + appName + "\"/><h1>" + appName + " 1.0</h1>" +
+                    "<p>Copyright " + year + " - 2025 ECIL</p><big><b>Author: </b></big>Abhinav Biswas, Technical Officer, ITSD" +
+                    "<p><b>Electronics Corporation of India Limited</b> (ECIL)<br>Department of Atomic Energy, Government of India</p><p>" +
+                    "</p><hr/><p></p><hr/><p><b>Aswini App</b> is a secure VPN-only Intranet Portal for Android Mobile Operating System, " +
+                    "developed by IT Services Division (ITSD) of Electronics Corporation of India Limited (ECIL), a Govt. of India (Dept. " +
+                    "of Atomic Energy) Enterprise. <br><br>This App must be used by ECIL employees only.\n<br><br><br>\nFor further details " +
+                    "contact Administrator:<br>administrator@ecil.co.in<br><br><hr/><h2>Change Log</h2><ul><li>First Version of Aswini " +
+                    "Android App.</li></ul>";
+
+            webview.loadDataWithBaseURL("file:///android_res/drawable/", html, "text/html", "utf-8", null);
             getSupportActionBar().setTitle("About Aswini App");
         }
 
