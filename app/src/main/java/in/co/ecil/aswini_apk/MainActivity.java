@@ -330,8 +330,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         @Override
-        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-            handler.proceed(); // Ignore SSL certificate errors
+        public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+            //Log.e("ERROR", "ERROR IN CODE: " + error.toString());
+            //e.printStackTrace();
+            //Toast.makeText(MainActivity.this, "ERROR "+ error.toString(), Toast.LENGTH_LONG).show();
+            //handler.proceed(); // Ignore SSL certificate errors
+            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage(R.string.notification_error_ssl_cert_invalid);
+            builder.setPositiveButton("continue", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    handler.proceed();
+                }
+            });
+            builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    handler.cancel();
+                }
+            });
+            final AlertDialog dialog = builder.create();
+            dialog.show();
         }
 
 /*        @Override
