@@ -1,6 +1,7 @@
-package in.co.ecil.aswini_android;
+package in.co.ecil.aswini_apk;
 
 import android.app.DownloadManager;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Environment;
 import android.support.design.widget.NavigationView;
@@ -19,6 +21,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +29,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
+import android.webkit.SslErrorHandler;
 import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -51,6 +55,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     String url = "http://aswini.ecil.co.in";
     String current_url = "http://aswini.ecil.co.in";
     LinearLayout myLinearLayout;
+
+    String appName = "Aswini App";
+    int year = Calendar.getInstance().get(Calendar.YEAR);
+    String html = "<!DOCTYPE html><head>" +
+            "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><title>About Aswini App</title></head>" +
+            "<body><img src=\"file:///android_asset/ic_launcher.png\" alt=\"" + appName + "\"/><h1>" + appName + " 1.0</h1>" +
+            "<p>Copyright " + year + " - 2025 ECIL</p><big><b>Author: </b></big>Abhinav Biswas, Sr. Technical Officer, ITSD" +
+            "<p><b>Electronics Corporation of India Limited</b> (ECIL)<br>Department of Atomic Energy, Government of India</p><p>" +
+            "</p><hr/><p></p><hr/><p><b>Aswini App</b> is a secure Internal Portal for Android Mobile Operating System, " +
+            "developed by IT Services Division (ITSD) of Electronics Corporation of India Limited (ECIL), a Govt. of India (Dept. " +
+            "of Atomic Energy) Enterprise. <br><br>This App must be used by ECIL employees only.\n<br><br><br>\nFor further details " +
+            "contact Administrator:<br>administrator@ecil.co.in<br><br><hr/><h2>Change Log</h2><ul><li>First Version of Aswini " +
+            "Android App.</li></ul></body></html>";
 
     public static final String PREFERENCES = "PREFERENCES_NAME";
     public static final String WEB_LINKS = "links";
@@ -151,7 +168,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public  class myWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
+            if ( url.endsWith(".pdf")){
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                //Intent intent = new Intent(Intent.ACTION_VIEW);
+                //intent.setDataAndType(Uri.parse(url), "application/pdf");
+                try{
+                    view.getContext().startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    //user does not have a pdf viewer installed
+                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                    alertDialog.setTitle("No PDF Viewer Application Installed");
+                    alertDialog.setMessage("Please install any PDF Viewer application from Google Play Store.");
+                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Skip", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //finish();
+                            //startActivity(getIntent());
+                        }
+                    });
+                    alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            in = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/search?q=pdf%20viewer"));
+                            startActivity(in);
+                            finish();
+                        }
+                    });
+                    alertDialog.show();
+
+                }
+            } else {
+                view.loadUrl(url);
+            }
             current_url = url;
             invalidateOptionsMenu();
             return true;
@@ -165,8 +211,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             progressBar.setVisibility(View.GONE);
             progressBar.setProgress(100);
 
-            if (url.contentEquals("http://aswini.ecil.co.in/") || url.contentEquals("http://aswini.ecil.co.in")) {
+            if (url.contentEquals("http://aswini.ecil.co.in/quicklinks/") || url.contentEquals("http://aswini.ecil.co.in")) {
                 getSupportActionBar().setTitle(R.string.app_long_name);
+            } else if (url.contains("payslips.ecil.co.in")) {
+                getSupportActionBar().setTitle("Payroll Login");
+            } else if (url.contains("careers.ecil.co.in")) {
+                getSupportActionBar().setTitle("Careers Portal");
             } else {
                 getSupportActionBar().setTitle(view.getTitle());
             }
@@ -179,18 +229,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         "document.getElementsByClassName('col-md-2')[1].style.top = '0';" +
                         "document.getElementsByClassName('col-md-2')[1].style.right = '0';" +
                         "document.getElementsByClassName('col-md-2')[1].style.padding = 'initial';" +
-                        "document.getElementsByClassName('col-md-1')[0].style.display = 'none';" +
-                        "document.getElementsByClassName('site-title')[0].style.margin = '45px 0 0 0';" +
-                        "document.getElementsByClassName('site-description')[0].style.margin = '15px';" +
-                        "document.getElementsByClassName('col-md-3')[0].style.display = 'none';" +
-                        "document.getElementsByClassName('menu-toggle')[0].style.fontSize = '30px';" +
+                        //"document.getElementsByClassName('col-md-1')[0].style.display = 'none';" +
+                        "document.getElementsByClassName('site-title')[0].style.margin = '40px 0 0 0';" +
+                        "document.getElementsByClassName('site-description')[0].style.padding = '15px 35px 10px 35px';" +
+                        //"document.getElementsByClassName('site-description')[0].style.display = 'none';" +
+                        "document.getElementById('post-7729').style.margin = '15px';" +
                         "document.getElementById('social-links').style.display = 'none';" +
+                        //"document.getElementsByClassName('col-md-3')[0].style.display = 'none';" +
+                        //"document.getElementsByClassName('menu-toggle')[0].style.fontSize = '30px';" +
+
                         "} void 0");
             } else if (url.contains("http://aswini.ecil.co.in/teldir/public")) {
                 view.getSettings().setUseWideViewPort(true);
             } else if (url.contains("https://ecprdci.ecil.co.in:8443/nwbc")) {
                 view.getSettings().setUseWideViewPort(true);
+            } else if (url.contains("http://careers.ecil.co.in")) {
+                view.getSettings().setUseWideViewPort(true);
             }
+
         }
 
         @Override
@@ -198,12 +254,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onPageStarted(view, url, favicon);
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(5);
+
+            if (url.contains("mail.ecil.co.in")) {
+                //view.loadUrl("about:blank");
+                in = getPackageManager().getLaunchIntentForPackage("com.fsck.k9");
+                if (in != null) {
+                    // We found the activity now start the activity
+                    in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(in);
+                } else {
+                    // Bring user to the market or let them choose an app?
+                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                    alertDialog.setTitle("EC-Mail App Not Installed !!!");
+                    alertDialog.setMessage("Please install the EC-Mail Android App from Google Play Store for better User Interface.");
+                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+
+                    alertDialog.show();
+                }
+
+            }
         }
 
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             try {
+                //Toast.makeText(MainActivity.this, "Error" + description + failingUrl, Toast.LENGTH_LONG).show();
                 view.stopLoading();
             } catch (Exception e) {
+                //Log.e("ERROR", "ERROR IN CODE: " + e.toString());
+                //e.printStackTrace();
+                //Toast.makeText(MainActivity.this, "Error "+ e.toString(), Toast.LENGTH_SHORT).show();
             }
 
             if (view.canGoBack()) {
@@ -213,14 +295,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             view.loadUrl("about:blank");
             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
             alertDialog.setTitle("Secure Connection Error");
-            alertDialog.setMessage("Check your Internet connection is enabled & EC SSL VPN Connection is configured properly.");
+            alertDialog.setMessage("Check your Internet connection is enabled & EC SSL VPN Connection (if any) is configured properly.");
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Try Again", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     finish();
                     startActivity(getIntent());
                 }
             });
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Open EC SSL VPN App", new DialogInterface.OnClickListener() {
+            /*alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Open EC SSL VPN App", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     in = getPackageManager().getLaunchIntentForPackage("de.blinkt.openvpn");
                     if (in != null) {
@@ -241,13 +323,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     finish();
                 }
-            });
+            });*/
 
             alertDialog.show();
             super.onReceivedError(view, errorCode, description, failingUrl);
         }
 
         @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            handler.proceed(); // Ignore SSL certificate errors
+        }
+
+/*        @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
                 if (url.contains("Integrated_Security_System_Tyre_Killer.jpg")) {
@@ -343,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 return super.shouldInterceptRequest(view, request);
             }
-        }
+        }*/
     }
 
     private class myWebChromeClient extends WebChromeClient {
@@ -375,7 +462,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        if (current_url != "http://aswini.ecil.co.in") {
+        if (current_url.contains("http://aswini.ecil.co.in/quicklinks/")) {
+            getMenuInflater().inflate(R.menu.main, menu);
+            //getMenuInflater().inflate(R.menu.browser, menu);
+        }
+        else {
             getMenuInflater().inflate(R.menu.browser, menu);
 
             SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
@@ -396,9 +487,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 menu.getItem(0).setIcon(R.drawable.ic_bookmark_border_black_24dp);
             }
         }
-        else {
-            getMenuInflater().inflate(R.menu.main, menu);
-        }
 
         return true;
     }
@@ -416,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         }*/
 
-        if (item.getItemId() == R.id.action_settings) {
+/*        if (item.getItemId() == R.id.action_settings) {
 
             in = getPackageManager().getLaunchIntentForPackage("de.blinkt.openvpn");
             if (in != null) {
@@ -436,22 +524,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 alertDialog.show();
             }
             return true;
-        }
+        }*/
 
         if (item.getItemId() == R.id.action_about) {
-            String appName = getString(R.string.app_long_name);
-            int year = Calendar.getInstance().get(Calendar.YEAR);
-
-            String html = "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><title>About Aswini App</title>" +
-                    "<img src=\"file:///android_asset/ic_launcher.png\" alt=\"" + appName + "\"/><h1>" + appName + " 1.0</h1>" +
-                    "<p>Copyright " + year + " - 2025 ECIL</p><big><b>Author: </b></big>Abhinav Biswas, Technical Officer, ITSD" +
-                    "<p><b>Electronics Corporation of India Limited</b> (ECIL)<br>Department of Atomic Energy, Government of India</p><p>" +
-                    "</p><hr/><p></p><hr/><p><b>Aswini App</b> is a secure VPN-only Intranet Portal for Android Mobile Operating System, " +
-                    "developed by IT Services Division (ITSD) of Electronics Corporation of India Limited (ECIL), a Govt. of India (Dept. " +
-                    "of Atomic Energy) Enterprise. <br><br>This App must be used by ECIL employees only.\n<br><br><br>\nFor further details " +
-                    "contact Administrator:<br>administrator@ecil.co.in<br><br><hr/><h2>Change Log</h2><ul><li>First Version of Aswini " +
-                    "Android App.</li></ul>";
-
             webview.loadDataWithBaseURL("file:///android_res/drawable/", html, "text/html", "utf-8", null);
             getSupportActionBar().setTitle("About Aswini App");
         }
@@ -523,12 +598,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
             case R.id.nav_home :
-                navigationView.getMenu().getItem(0).setChecked(false);
+                //navigationView.getMenu().getItem(0).setChecked(false);
                 startActivity(new Intent(this, MainActivity.class));
                 break;
 
+            case R.id.nav_att :
+                //navigationView.getMenu().getItem(1).setChecked(false);
+                in = new Intent(this, MainActivity.class);
+                in.putExtra("url", "https://ecprdci.ecil.co.in:8443/sap/bc/gui/sap/its/zhrtmr017/");
+                startActivity(in);
+                break;
+
+            case R.id.nav_ess :
+                //navigationView.getMenu().getItem(2).setChecked(false);
+                in = new Intent(this, MainActivity.class);
+                in.putExtra("url", "https://ecprdci.ecil.co.in:8443/nwbc");
+                startActivity(in);
+                break;
+
+            case R.id.nav_pay :
+                //navigationView.getMenu().getItem(3).setChecked(false);
+                in = new Intent(this, MainActivity.class);
+                in.putExtra("url", "https://payslips.ecil.co.in/");
+                startActivity(in);
+                break;
+
+            case R.id.nav_gst :
+                //navigationView.getMenu().getItem(4).setChecked(false);
+                in = new Intent(this, MainActivity.class);
+                in.putExtra("url", "https://gstn.ecil.co.in:8080/");
+                startActivity(in);
+                break;
+
+            case R.id.nav_car :
+                //navigationView.getMenu().getItem(5).setChecked(false);
+                in = new Intent(this, MainActivity.class);
+                in.putExtra("url", "http://careers.ecil.co.in/");
+                startActivity(in);
+                break;
+
+            case R.id.nav_emp :
+                //navigationView.getMenu().getItem(6).setChecked(false);
+                in = new Intent(this, MainActivity.class);
+                in.putExtra("url", "http://aswini.ecil.co.in/teldir/public/");
+                startActivity(in);
+                break;
+
             case R.id.nav_ecmail :
-                navigationView.getMenu().getItem(1).setChecked(false);
+                //navigationView.getMenu().getItem(7).setChecked(false);
                 //startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.parse("file:///android_asset/k9mail-release.apk"),"application/vnd.android.package-archive"));
 
                 in = getPackageManager().getLaunchIntentForPackage("com.fsck.k9");
@@ -540,7 +657,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Bring user to the market or let them choose an app?
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                     alertDialog.setTitle("EC-Mail App Not Installed !!!");
-                    alertDialog.setMessage("Please install the EC-Mail Android App or Contact the administrator.");
+                    alertDialog.setMessage("Please install the EC-Mail Android App from Google Play Store or Contact the administrator.");
                     alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                         }
@@ -548,40 +665,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     alertDialog.show();
                 }
-
-                break;
-
-            case R.id.nav_att :
-                navigationView.getMenu().getItem(2).setChecked(false);
-                in = new Intent(this, MainActivity.class);
-                in.putExtra("url", "https://ecprdci.ecil.co.in:8443/sap/bc/gui/sap/its/zhrtmr017/");
-                startActivity(in);
-                break;
-
-            case R.id.nav_emp :
-                navigationView.getMenu().getItem(3).setChecked(false);
-                in = new Intent(this, MainActivity.class);
-                in.putExtra("url", "http://aswini.ecil.co.in/teldir/public/");
-                startActivity(in);
-                break;
-
-            case R.id.nav_ess :
-                navigationView.getMenu().getItem(4).setChecked(false);
-                in = new Intent(this, MainActivity.class);
-                in.putExtra("url", "https://ecprdci.ecil.co.in:8443/nwbc");
-                startActivity(in);
-                break;
-
-            case R.id.nav_pay :
-                navigationView.getMenu().getItem(5).setChecked(false);
-                in = new Intent(this, MainActivity.class);
-                in.putExtra("url", "http://payslips.ecil.co.in/FAG_EDP/");
-                startActivity(in);
                 break;
 
             case R.id.nav_bookmark :
-                navigationView.getMenu().getItem(6).setChecked(false);
+                //navigationView.getMenu().getItem(8).setChecked(false);
                 startActivity(new Intent(this, BookmarkActivity.class));
+                break;
+
+            case R.id.nav_about :
+                webview.loadDataWithBaseURL("file:///android_res/drawable/", html, "text/html", "utf-8", null);
+                getSupportActionBar().setTitle("About VIKAS - FLC Reporting App");
                 break;
         }
 

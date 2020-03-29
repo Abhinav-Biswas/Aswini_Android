@@ -1,4 +1,4 @@
-package in.co.ecil.aswini_android;
+package in.co.ecil.aswini_apk;
 
 import android.content.Intent;
 import android.os.Bundle;

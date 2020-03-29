@@ -1,4 +1,4 @@
-package in.co.ecil.aswini_android;
+package in.co.ecil.aswini_apk;
 
 /**
  * Example local unit test, which will execute on the development machine (host).

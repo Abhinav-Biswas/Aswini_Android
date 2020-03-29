@@ -1,36 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single" android:id="@+id/grp1">
         <item
             android:id="@+id/nav_home"
             android:icon="@android:drawable/btn_star_big_off"
             android:title="Home Page" />
+    </group>
 
+    <item android:title="Employee Services">
+        <menu>
+            <group android:id="@+id/grp2">
+                <item
+                    android:id="@+id/nav_att"
+                    android:icon="@android:drawable/stat_notify_sync"
+                    android:title="Attendance Status" />
+
+                <item
+                    android:id="@+id/nav_ess"
+                    android:icon="@android:drawable/checkbox_on_background"
+                    android:title="ESS/MSS Services" />
+
+                <item
+                    android:id="@+id/nav_pay"
+                    android:icon="@android:drawable/ic_menu_compass"
+                    android:title="Payroll Services" />
+
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="Web Portals">
+        <menu>
+            <group android:id="@+id/grp3">
+                <item
+                    android:id="@+id/nav_gst"
+                    android:icon="@android:drawable/ic_dialog_dialer"
+                    android:title="GSTN Portal" />
+
+                <item
+                    android:id="@+id/nav_car"
+                    android:icon="@android:drawable/ic_media_ff"
+                    android:title="Careers Portal" />
+
+                <item
+                    android:id="@+id/nav_emp"
+                    android:icon="@android:drawable/ic_menu_search"
+                    android:title="Telephone Directory" />
+
+            </group>
+        </menu>
+    </item>
+
+    <group android:id="@+id/grp4">
         <item
             android:id="@+id/nav_ecmail"
+            android:icon="@android:drawable/ic_dialog_email"
             android:title="EC-Mail App" />
+    </group>
 
-        <item
-            android:id="@+id/nav_att"
-            android:title="Attendance Status" />
-
-        <item
-            android:id="@+id/nav_emp"
-            android:title="Employees Directory" />
-
-        <item
-            android:id="@+id/nav_ess"
-            android:title="ESS/MSS Services" />
-
-        <item
-            android:id="@+id/nav_pay"
-            android:title="Payroll Services" />
-
+    <group android:id="@+id/grp5">
         <item
             android:id="@+id/nav_bookmark"
             android:icon="@drawable/ic_bookmark_black_24dp"
             android:title="Personal Bookmarks" />
+
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="About Aswini App" />
     </group>
 
 </menu>

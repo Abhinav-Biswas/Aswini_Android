@@ -13,7 +13,7 @@ allprojects {
 android {
     signingConfigs {
         MyConfig {
-            storeFile file('C:/Users/Abhinav/Documents/GitHub/abhinavbiswas.jks')
+            storeFile file('/Users/abhinavbiswas/Documents/GitHub/Aswini_Android/abhinavbiswas.jks')
             storePassword 'Prince@123'
             keyAlias 'key0'
             keyPassword 'Prince@123'
@@ -23,10 +23,10 @@ android {
     }
     compileSdkVersion 27
     defaultConfig {
-        applicationId "in.co.ecil.aswini_android"
+        applicationId "in.co.ecil.aswini_apk"
         minSdkVersion 16
-        targetSdkVersion 27
-        versionCode 1
+        targetSdkVersion 28
+        versionCode 3
         versionName "1.0"
     }
     buildTypes {
