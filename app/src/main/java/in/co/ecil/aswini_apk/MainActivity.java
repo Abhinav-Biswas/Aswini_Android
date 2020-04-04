@@ -41,9 +41,18 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -53,8 +62,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private WebView webview;
     private ProgressBar progressBar;
     String url = "http://aswini.ecil.co.in";
-    String current_url = "http://aswini.ecil.co.in";
+    String current_url = "home";
     LinearLayout myLinearLayout;
+
+    int vcode = BuildConfig.VERSION_CODE;
+    boolean vcode_flag = true;
 
     String appName = "Aswini App";
     int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -68,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             "of Atomic Energy) Enterprise. <br><br>This App must be used by ECIL employees only.\n<br><br><br>\nFor further details " +
             "contact Administrator:<br>administrator@ecil.co.in<br><br><hr/><h2>Change Log</h2><ul><li>First Version of Aswini " +
             "Android App.</li></ul></body></html>";
+
+    String html1 = "Nil";
 
     public static final String PREFERENCES = "PREFERENCES_NAME";
     public static final String WEB_LINKS = "links";
@@ -162,7 +176,81 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Toast.LENGTH_LONG).show();
             }});
 
-        webview.loadUrl(url);
+        //App Update Check
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String check_url ="https://abhinav-biswas.github.io/aswini.github.io/";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, check_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        //Log.e("Response is: "+ response.substring(0,500));
+                        vcode = Integer.parseInt(response.substring(14,16));
+                        //getSupportActionBar().setTitle(Integer.toString(BuildConfig.VERSION_CODE));
+                        if (BuildConfig.VERSION_CODE < vcode && vcode_flag && current_url.contains("home")) {
+                            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                            alertDialog.setTitle("New Update Available!!!");
+                            alertDialog.setMessage("Please update this app to the Latest version from Google Play Store.");
+                            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Remind me later", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    vcode_flag = false;
+                                    //finish();
+                                    //startActivity(getIntent());
+                                }
+                            });
+                            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Open Play Store", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    in = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=in.co.ecil.aswini_apk"));
+                                    startActivity(in);
+                                    finish();
+                                }
+                            });
+                            alertDialog.show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //mTextView.setText("That didn't work!");
+                Toast.makeText(getApplicationContext(), "Auto-Update Check Failed.",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Add the request to the RequestQueue.
+        stringRequest.setShouldCache(false);
+        queue.add(stringRequest);
+
+        if (current_url.contains("home")) {
+            //webview.loadDataWithBaseURL("file:///android_res/drawable/", html1, "text/html", "utf-8", null);
+            webview.loadDataWithBaseURL("file:///android_asset/images", readFileAsString("index.html"),"text/html", "utf-8", null);
+        } else {
+            webview.loadUrl(url);
+        }
+    }
+
+    private String readFileAsString(String sourceHtmlLocation) {
+        InputStream is;
+        try
+        {
+            is = getAssets().open(sourceHtmlLocation);
+            int size = is.available();
+
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+
+            return new String(buffer, "UTF-8");
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return "";
     }
 
     public  class myWebViewClient extends WebViewClient {
@@ -215,13 +303,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportActionBar().setTitle(R.string.app_long_name);
             } else if (url.contains("payslips.ecil.co.in")) {
                 getSupportActionBar().setTitle("Payroll Login");
+                //view.getSettings().setUseWideViewPort(false);
             } else if (url.contains("careers.ecil.co.in")) {
                 getSupportActionBar().setTitle("Careers Portal");
+                //view.getSettings().setUseWideViewPort(true);
+            } else if (url.contains("http://aswini.ecil.co.in/teldir/public")) {
+                getSupportActionBar().setTitle("Telephone Directory");
+                view.getSettings().setUseWideViewPort(true);
+            } else if (url.contains("http://aswini.ecil.co.in/latestcirculars")) {
+                getSupportActionBar().setTitle("Latest Circulars");
             } else {
                 getSupportActionBar().setTitle(view.getTitle());
             }
 
-            if (url.contains("http://aswini.ecil.co.in")) {
+            if (url.contains("http://aswini.ecil.co.in/quicklinks")) {
                 view.loadUrl("javascript:if (typeof(document.getElementsByClassName('col-md-2')[0]) != 'undefined' && " +
                         "document.getElementsByClassName('col-md-2')[0] != null){" +
                         "document.getElementsByClassName('col-md-2')[0].style.position = 'absolute';" +
@@ -237,16 +332,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         "document.getElementById('social-links').style.display = 'none';" +
                         //"document.getElementsByClassName('col-md-3')[0].style.display = 'none';" +
                         //"document.getElementsByClassName('menu-toggle')[0].style.fontSize = '30px';" +
-
+                        "} void 0");
+            } else if (url.contains("http://aswini.ecil.co.in/latestcirculars")) {
+                view.loadUrl("javascript:if (typeof(document.getElementsByClassName('col-md-2')[0]) != 'undefined' && " +
+                        "document.getElementsByClassName('col-md-2')[0] != null){" +
+                        "document.getElementsByClassName('col-md-2')[0].style.display = 'none';" +
+                        "document.getElementsByClassName('col-md-2')[1].style.display = 'none';" +
+                        "document.getElementsByClassName('entry-header')[0].style.display = 'none';" +
+                        "document.getElementsByClassName('site-title')[0].style.display = 'none';" +
+                        "document.getElementsByClassName('site-description')[0].style.display = 'none';" +
+                        //"document.getElementById('post-7729').style.margin = '15px';" +
+                        "document.getElementById('social-links').style.display = 'none';" +
+                        "[].forEach.call(document.getElementsByClassName('btn-group'), function (el) {el.style.float = 'right';});" +
+                        //"document.getElementsByClassName('menu-toggle')[0].style.fontSize = '30px';" +
                         "} void 0");
             } else if (url.contains("http://aswini.ecil.co.in/teldir/public")) {
-                view.getSettings().setUseWideViewPort(true);
+                view.loadUrl("javascript:" +
+                        "(function() {" +
+                        "document.getElementsByClassName('collapse navbar-collapse navbar-ex1-collapse')[0].style.display = 'contents';" +
+                        "document.getElementsByClassName('navbar-brand')[0].style.display = 'none';" +
+                        "document.getElementsByClassName('nav navbar-nav navbar-right')[0].style.display = 'none';" +
+                        "document.getElementsByClassName('navbar-toggle')[0].style.display = 'none';" +
+                        "void 0;" +
+                        "}) ();");
+                //Toast.makeText(MainActivity.this, "Error hap" , Toast.LENGTH_LONG).show();
             } else if (url.contains("https://ecprdci.ecil.co.in:8443/nwbc")) {
                 view.getSettings().setUseWideViewPort(true);
-            } else if (url.contains("http://careers.ecil.co.in")) {
-                view.getSettings().setUseWideViewPort(true);
+            } else if (url.contains("careers.ecil.co.in")) {
+                view.loadUrl("javascript:" +
+                        "(function() {" +
+                        "document.getElementsByTagName('td')[0].style.display = 'none';" +
+                        "void 0;" +
+                        "}) ();");
             }
-
         }
 
         @Override
@@ -481,7 +599,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        if (current_url.contains("http://aswini.ecil.co.in/quicklinks/")) {
+        if ((current_url.contains("http://aswini.ecil.co.in/quicklinks/")) || (current_url.contains("home"))){
             getMenuInflater().inflate(R.menu.main, menu);
             //getMenuInflater().inflate(R.menu.browser, menu);
         }
@@ -625,6 +743,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //navigationView.getMenu().getItem(1).setChecked(false);
                 in = new Intent(this, MainActivity.class);
                 in.putExtra("url", "https://ecprdci.ecil.co.in:8443/sap/bc/gui/sap/its/zhrtmr017/");
+                //in.putExtra("home", false);
                 startActivity(in);
                 break;
 
