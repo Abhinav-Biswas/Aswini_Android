@@ -422,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             /*alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Open EC SSL VPN App", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    in = getPackageManager().getLaunchIntentForPackage("de.ecil.openvpn");
+                    in = getPackageManager().getLaunchIntentForPackage("de.blinkt.openvpn");
                     if (in != null) {
                         // We found the activity now start the activity
                         in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -643,7 +643,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 /*        if (item.getItemId() == R.id.action_settings) {
 
-            in = getPackageManager().getLaunchIntentForPackage("de.ecil.openvpn");
+            in = getPackageManager().getLaunchIntentForPackage("de.blinkt.openvpn");
             if (in != null) {
                 // We found the activity now start the activity
                 in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
