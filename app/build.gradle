@@ -13,7 +13,7 @@ allprojects {
 android {
     signingConfigs {
         MyConfig {
-            storeFile file('/Users/abhinavbiswas/Documents/GitHub/Aswini_Android/abhinavbiswas.jks')
+            storeFile file('/Users/abhinavbiswas/GitHub/Aswini_Android/abhinavbiswas.jks')
             storePassword 'Prince@123'
             keyAlias 'key0'
             keyPassword 'Prince@123'
