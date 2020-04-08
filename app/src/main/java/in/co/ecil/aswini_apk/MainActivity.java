@@ -413,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             view.loadUrl("about:blank");
             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
             alertDialog.setTitle("Secure Connection Error");
-            alertDialog.setMessage("Check your Internet connection is enabled & EC SSL VPN Connection (if any) is configured properly.");
+            alertDialog.setMessage("Check your Internet connection is enabled or else the Server may be down. Please contact the Administrator");
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Try Again", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     finish();
