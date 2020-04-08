@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="\n\n\n\nAttempting Secure Connection \n via EC SSL VPN..."
+        android:text="\n\n\n\nAttempting Secure Connection..."
         android:visibility="visible" />
 
     <WebView

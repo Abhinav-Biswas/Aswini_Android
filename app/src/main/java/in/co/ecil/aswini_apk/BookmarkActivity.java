@@ -1,4 +1,4 @@
-package in.co.ecil.aswini_android;
+package in.co.ecil.aswini_apk;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static in.co.ecil.aswini_android.MainActivity.PREFERENCES;
-import static in.co.ecil.aswini_android.MainActivity.WEB_LINKS;
-import static in.co.ecil.aswini_android.MainActivity.WEB_TITLE;
+import static in.co.ecil.aswini_apk.MainActivity.PREFERENCES;
+import static in.co.ecil.aswini_apk.MainActivity.WEB_LINKS;
+import static in.co.ecil.aswini_apk.MainActivity.WEB_TITLE;
 
 
 public class BookmarkActivity extends AppCompatActivity {

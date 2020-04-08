@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="in.co.ecil.aswini_android">
+    package="in.co.ecil.aswini_apk">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -11,21 +11,22 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
-        android:windowSoftInputMode="adjustNothing">
+        android:windowSoftInputMode="adjustNothing"
+        android:usesCleartextTraffic="true">
         <activity
-            android:name=".MainActivity"
+            android:name="in.co.ecil.aswini_apk.MainActivity"
             android:clearTaskOnLaunch="true">
         </activity>
         <activity
-            android:name=".BookmarkActivity"
-            android:parentActivityName=".MainActivity"
+            android:name="in.co.ecil.aswini_apk.BookmarkActivity"
+            android:parentActivityName="in.co.ecil.aswini_apk.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.co.ecil.aswini_android.MainActivity" />
+                android:value="in.co.ecil.aswini_apk.MainActivity" />
         </activity>
-        <activity android:name=".NewMain">
+        <activity android:name="in.co.ecil.aswini_apk.NewMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
