@@ -2,7 +2,6 @@ package in.co.ecil.aswini_apk;
 
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,15 +11,21 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Environment;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.NonNull;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -32,13 +37,14 @@ import android.webkit.DownloadListener;
 import android.webkit.SslErrorHandler;
 import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -48,6 +54,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -59,18 +67,19 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private WebView webview;
-    private ProgressBar progressBar;
-    String url = "http://aswini.ecil.co.in";
+    public WebView webview;
+    //private ProgressBar progressBar;
+    //String url = "http://aswini.ecil.co.in";
+    String url = "";
     String current_url = "home";
     LinearLayout myLinearLayout;
 
     int vcode = BuildConfig.VERSION_CODE;
     boolean vcode_flag = true;
 
-    String appName = "Aswini App";
-    int year = Calendar.getInstance().get(Calendar.YEAR);
-    String html = "<!DOCTYPE html><head>" +
+    public static String appName = "Aswini App";
+    public static int year = Calendar.getInstance().get(Calendar.YEAR);
+    public static String html = "<!DOCTYPE html><head>" +
             "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><title>About Aswini App</title></head>" +
             "<body><img src=\"file:///android_asset/ic_launcher.png\" alt=\"" + appName + "\"/><h1>" + appName + " 1.0</h1>" +
             "<p>Copyright " + year + " - 2025 ECIL</p><big><b>Author: </b></big>Abhinav Biswas, Sr. Technical Officer, ITSD" +
@@ -91,6 +100,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Intent in;
     Toolbar toolbar;
 
+    //////////
+    private static final String TAG = "MainActivity";
+    public static final String MY_PREFS_NAME = "UserDetails";
+    public EditText emailId, passwd;
+    Button btnSignUp;
+    TextView signIn;
+    public static FirebaseAuth firebaseAuth;
+
+    ActionCodeSettings actionCodeSettings =
+            ActionCodeSettings.newBuilder()
+                    // URL you want to redirect back to. The domain (www.example.com) for this
+                    // URL must be whitelisted in the Firebase Console.
+                    .setUrl("https://ecilgoogleplaystore.page.link/aswini_app_registration")
+                    // This must be true
+                    .setHandleCodeInApp(true)
+                    .setIOSBundleId("com.example.ios")
+                    .setAndroidPackageName(
+                            "in.co.ecil.aswini_apk",
+                            true, /* installIfNotAvailable */
+                            "1"    /* minimumVersion */)
+                    .build();
+    //A1:84:B4:C2:A9:3A:97:F6:E7:1E:4F:1F:CB:4C:C6:1F:AE:D5:7B:4F
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,14 +134,160 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         getSupportActionBar().setTitle(R.string.app_long_name);
 
-        if (getIntent().getExtras() != null) {
+/*        if (getIntent().getExtras() != null) {
             url = getIntent().getStringExtra("url");
             current_url = getIntent().getStringExtra("url");
             getSupportActionBar().setTitle(getIntent().getStringExtra("title"));
-        }
+        }*/
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView.setNavigationItemSelectedListener(this);
+
+        navigationView.getMenu().findItem(R.id.nav_home).setVisible(false);
+        navigationView.getMenu().findItem(R.id.nav_att).setVisible(false);
+        navigationView.getMenu().findItem(R.id.nav_ess).setVisible(false);
+        navigationView.getMenu().findItem(R.id.nav_pay).setVisible(false);
+        navigationView.getMenu().findItem(R.id.nav_gst).setVisible(false);
+        navigationView.getMenu().findItem(R.id.nav_car).setVisible(false);
+        navigationView.getMenu().findItem(R.id.nav_emp).setVisible(false);
+        navigationView.getMenu().findItem(R.id.nav_bookmark).setVisible(false);
 
         webview = findViewById(R.id.webView);
-        progressBar = findViewById(R.id.progressBar);
+        webview.setVisibility(View.GONE);
+
+        ///
+        firebaseAuth = FirebaseAuth.getInstance();
+        //Toast.makeText(MainActivity.this, "Start", Toast.LENGTH_SHORT).show();
+
+        if (firebaseAuth.getCurrentUser() != null){
+            Toast.makeText(MainActivity.this, "Logged in User Email ID: \n" + firebaseAuth.getCurrentUser().getEmail(), Toast.LENGTH_LONG).show();
+            //Log.d(TAG, "Starting activity.");
+            startActivity(new Intent(MainActivity.this, UserActivity.class));
+        }
+
+        //Log.d(TAG, "Ending activity.");
+
+        emailId = findViewById(R.id.ETemail);
+        emailId.setVisibility(View.VISIBLE);
+        /*passwd = findViewById(R.id.ETpassword);*/
+        btnSignUp = findViewById(R.id.btnSignUp);
+        btnSignUp.setVisibility(View.VISIBLE);
+        //signIn = findViewById(R.id.TVSignIn);
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String emailID = emailId.getText().toString();
+                /*String paswd = passwd.getText().toString();*/
+                if (emailID.isEmpty()) {
+                    emailId.setError("Provide your EC-Mail ID first!");
+                    emailId.requestFocus();
+                }
+                /*else if (paswd.isEmpty()) {
+                    passwd.setError("Set your PIN");
+                    passwd.requestFocus();
+                } */
+                else if (!(emailID.contains("ecil.co.in"))) {
+                //else if (!(emailID.contains("gmail.com"))) {
+                    Toast.makeText(MainActivity.this, "Only Ec-Mail Users \ncan Log in to ECIL Aswini App!", Toast.LENGTH_LONG).show();
+                } else if (!(emailID.isEmpty()) && emailID.contains("ecil.co.in")) {
+                //} else if (!(emailID.isEmpty()) && emailID.contains("gmail.com")) {
+                    /*firebaseAuth.createUserWithEmailAndPassword(emailID, paswd).addOnCompleteListener(MainActivity.this, new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+
+                            if (!task.isSuccessful()) {
+                                Toast.makeText(MainActivity.this.getApplicationContext(),
+                                        "SignUp unsuccessful: " + task.getException().getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                startActivity(new Intent(MainActivity.this, UserActivity.class));
+                            }
+                        }
+                    });*/
+
+                    firebaseAuth.sendSignInLinkToEmail(emailID, actionCodeSettings)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        //Log.d(TAG, "Email sent.");
+                                        //Toast.makeText(MainActivity.this.getApplicationContext(), "Email Successfully Sent...\n" + task.getResult(), Toast.LENGTH_LONG).show();
+                                        Toast.makeText(MainActivity.this.getApplicationContext(), "Email Successfully Sent...", Toast.LENGTH_LONG).show();
+                                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                        alertDialog.setTitle("Login Link successfully sent to your EC-Mail Account!!!");
+                                        alertDialog.setMessage("Please open the email on this device & click on the Login Link. \n\nFor any assistance Contact the administrator.");
+                                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Open EC-Mail App", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                in = getPackageManager().getLaunchIntentForPackage("com.fsck.ecmail");
+                                                if (in != null) {
+                                                    // We found the activity now start the activity
+                                                    in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    startActivity(in);
+                                                } else {
+                                                    // Bring user to the market or let them choose an app?
+                                                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                                    alertDialog.setTitle("EC-Mail App Not Installed !!!");
+                                                    alertDialog.setMessage("Please install & configure EC-Mail Android App from Google Play Store \nor \nOpen your EC-Mail account using Mobile browser.");
+                                                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            try {
+                                                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.fsck.ecmail")));
+                                                            } catch (android.content.ActivityNotFoundException anfe) {
+                                                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.fsck.ecmail")));
+                                                            }
+                                                        }
+                                                    });
+
+                                                    alertDialog.show();
+                                                }
+                                                //finish();
+                                            }
+                                        });
+
+                                        alertDialog.show();
+                                        //firebaseAuth.createUserWithEmailAndPassword(emailID, "Ecil@123");
+                                        // MY_PREFS_NAME - a static String variable like:
+                                        SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                                        editor.putString("emailID", emailID);
+                                        editor.apply();
+                                    } else {
+                                        Toast.makeText(MainActivity.this.getApplicationContext(),
+                                                "Login Unsuccessful: \nPlease Contact the Administrator." + task.getException(),
+                                                Toast.LENGTH_LONG).show();
+                                        //Log.d(TAG, "Email not sent." + task.getException());
+                                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                        alertDialog.setTitle("Login Link Not Sent !!!");
+                                        alertDialog.setMessage("Please check your Internet Connection or Contact the administrator.");
+                                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                            }
+                                        });
+                                        alertDialog.show();
+                                    }
+                                }
+                            });
+
+                } else {
+                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                    alertDialog.setTitle("Login Unsuccessful !!!");
+                    alertDialog.setMessage("Please check your Internet Connection or Contact the administrator.");
+                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    alertDialog.show();
+                }
+            }
+        });
+
+        /*progressBar = findViewById(R.id.progressBar);
         progressBar.setMax(100);
 
         webview.setWebViewClient(new myWebViewClient());
@@ -134,14 +312,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView.setNavigationItemSelectedListener(this);
 
         //webview.clearCache(true);
         //webview.clearHistory();
@@ -166,15 +337,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 request.setDestinationInExternalFilesDir(MainActivity.this,
                         Environment.DIRECTORY_DOWNLOADS,".pdf");
                 DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                /*try {
+                *//*try {
                     dm.enqueue(request);
                 } catch (Exception e){
                     Log.e(e.getClass().getName(), e.getMessage(), e);
-                }*/
+                }*//*
                 dm.enqueue(request);
                 Toast.makeText(getApplicationContext(), "Downloading File",
                         Toast.LENGTH_LONG).show();
-            }});
+            }});*/
 
         //App Update Check
         // Instantiate the RequestQueue.
@@ -224,12 +395,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         stringRequest.setShouldCache(false);
         queue.add(stringRequest);
 
-        if (current_url.contains("home")) {
+/*        if (current_url.contains("home")) {
             //webview.loadDataWithBaseURL("file:///android_res/drawable/", html1, "text/html", "utf-8", null);
             webview.loadDataWithBaseURL("file:///android_asset/images", readFileAsString("index.html"),"text/html", "utf-8", null);
         } else {
             webview.loadUrl(url);
-        }
+        }*/
     }
 
     private String readFileAsString(String sourceHtmlLocation) {
@@ -253,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return "";
     }
 
-    public  class myWebViewClient extends WebViewClient {
+/*    public  class myWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if ( url.endsWith(".pdf")){
@@ -289,9 +460,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             current_url = url;
             invalidateOptionsMenu();
             return true;
-        }
+        }*/
 
-        @Override
+/*        @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             findViewById(R.id.SplashText).setVisibility(View.GONE);
@@ -365,9 +536,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         "void 0;" +
                         "}) ();");
             }
-        }
+        }*/
 
-        @Override
+/*        @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             progressBar.setVisibility(View.VISIBLE);
@@ -394,9 +565,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
             }
-        }
+        }*/
 
-        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+        /*public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             try {
                 //Toast.makeText(MainActivity.this, "Error" + description + failingUrl, Toast.LENGTH_LONG).show();
                 view.stopLoading();
@@ -420,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     startActivity(getIntent());
                 }
             });
-            /*alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Open EC SSL VPN App", new DialogInterface.OnClickListener() {
+            *//*alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Open EC SSL VPN App", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     in = getPackageManager().getLaunchIntentForPackage("de.blinkt.openvpn");
                     if (in != null) {
@@ -441,13 +612,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     finish();
                 }
-            });*/
+            });*//*
 
             alertDialog.show();
             super.onReceivedError(view, errorCode, description, failingUrl);
-        }
+        }*/
 
-        @Override
+/*        @Override
         public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
             //Log.e("ERROR", "ERROR IN CODE: " + error.toString());
             //e.printStackTrace();
@@ -469,7 +640,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             final AlertDialog dialog = builder.create();
             dialog.show();
-        }
+        }*/
 
 /*        @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
@@ -567,7 +738,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 return super.shouldInterceptRequest(view, request);
             }
-        }*/
+        }
     }
 
     private class myWebChromeClient extends WebChromeClient {
@@ -582,14 +753,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportActionBar().setTitle(title);
             }
         }
-    }
+    }*/
 
-    @Override
+   @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && webview.canGoBack()) {
+        /*if ((keyCode == KeyEvent.KEYCODE_BACK) && webview.canGoBack()) {
             webview.goBack();
             return true;
-        }
+        }*/
+       if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+           startActivity(new Intent(this, MainActivity.class));
+           return true;
+       }
         else {
             finish();
         }
@@ -599,7 +774,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        if ((current_url.contains("http://aswini.ecil.co.in/quicklinks/")) || (current_url.contains("home"))){
+/*        if ((current_url.contains("http://aswini.ecil.co.in/quicklinks/")) || (current_url.contains("home"))){
             getMenuInflater().inflate(R.menu.main, menu);
             //getMenuInflater().inflate(R.menu.browser, menu);
         }
@@ -623,7 +798,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else {
                 menu.getItem(0).setIcon(R.drawable.ic_bookmark_border_black_24dp);
             }
-        }
+        }*/
+
+        getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
     }
@@ -664,7 +841,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }*/
 
         if (item.getItemId() == R.id.action_about) {
-            webview.loadDataWithBaseURL("file:///android_res/drawable/", html, "text/html", "utf-8", null);
+            //webview.loadDataWithBaseURL("file:///android_res/drawable/", html, "text/html", "utf-8", null);
+            webview.setVisibility(View.VISIBLE);
+            btnSignUp.setVisibility(View.GONE);
+            emailId.setVisibility(View.GONE);
+            displayAboutView ();
             getSupportActionBar().setTitle("About Aswini App");
         }
 
@@ -734,8 +915,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
+
+            case R.id.nav_User :
+                navigationView.getMenu().getItem(0).setChecked(false);
+                startActivity(new Intent(this, MainActivity.class));
+                break;
+
             case R.id.nav_home :
                 //navigationView.getMenu().getItem(0).setChecked(false);
+                //startActivity(new Intent(this, MainActivity.class));
+                navigationView.getMenu().getItem(1).setChecked(false);
+                Toast.makeText(getApplicationContext(), "Logged Out Successfully.",
+                        Toast.LENGTH_LONG).show();
+                FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(this, MainActivity.class));
                 break;
 
@@ -796,7 +988,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                     alertDialog.setTitle("EC-Mail App Not Installed !!!");
                     alertDialog.setMessage("Please install the EC-Mail Android App from Google Play Store or Contact the administrator.");
-                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "ok", new DialogInterface.OnClickListener() {
+                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                         }
                     });
@@ -811,14 +1003,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nav_about :
-                webview.loadDataWithBaseURL("file:///android_res/drawable/", html, "text/html", "utf-8", null);
-                getSupportActionBar().setTitle("About VIKAS - FLC Reporting App");
+                //webview.loadDataWithBaseURL("file:///android_res/drawable/", html, "text/html", "utf-8", null);
+                getSupportActionBar().setTitle("About Aswini App");
+                webview.setVisibility(View.VISIBLE);
+                btnSignUp.setVisibility(View.GONE);
+                emailId.setVisibility(View.GONE);
+                displayAboutView();
                 break;
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void displayAboutView() {
+
+        webview.setVisibility(View.VISIBLE);
+
+        webview.loadDataWithBaseURL("file:///android_res/drawable/", html, "text/html", "utf-8", null);
+        //webview.loadUrl("http://google.com");
     }
 
 }

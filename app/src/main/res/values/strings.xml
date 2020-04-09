@@ -4,5 +4,10 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_new_main">NewMain</string>
-    <string name="notification_error_ssl_cert_invalid">Redirecting to Another Server...</string>
+    <string name="notification_error_ssl_cert_invalid">Redirecting to Another Server…</string>
+    <string name="hint">Enter EC-Mail ID - (***@ecil.co.in)</string>
+    <string name="SignUp">Login with EC-Mail Id</string>
+    <string name="SignIn">Already have an account? Sign in Here</string>
+    <string name="Welcome">Welcome to ECIL Aswini App</string>
+    <string name="LogOut">LogOut</string>
 </resources>

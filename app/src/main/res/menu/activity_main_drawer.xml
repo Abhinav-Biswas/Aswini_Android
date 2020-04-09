@@ -3,8 +3,8 @@
 
     <group android:checkableBehavior="single" android:id="@+id/grp1">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@android:drawable/btn_star_big_off"
+            android:id="@+id/nav_User"
+            android:icon="@android:drawable/btn_star_big_on"
             android:title="Home Page" />
     </group>
 
@@ -64,7 +64,10 @@
             android:id="@+id/nav_bookmark"
             android:icon="@drawable/ic_bookmark_black_24dp"
             android:title="Personal Bookmarks" />
-
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@android:drawable/btn_dialog"
+            android:title="Logout" />
         <item
             android:id="@+id/nav_about"
             android:icon="@android:drawable/ic_menu_info_details"

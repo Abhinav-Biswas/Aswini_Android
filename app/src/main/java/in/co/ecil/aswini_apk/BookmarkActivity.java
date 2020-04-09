@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static in.co.ecil.aswini_apk.MainActivity.PREFERENCES;
-import static in.co.ecil.aswini_apk.MainActivity.WEB_LINKS;
-import static in.co.ecil.aswini_apk.MainActivity.WEB_TITLE;
+import static in.co.ecil.aswini_apk.UserActivity.PREFERENCES;
+import static in.co.ecil.aswini_apk.UserActivity.WEB_LINKS;
+import static in.co.ecil.aswini_apk.UserActivity.WEB_TITLE;
 
 
 public class BookmarkActivity extends AppCompatActivity {
@@ -81,7 +81,7 @@ public class BookmarkActivity extends AppCompatActivity {
                 Object o = listView.getAdapter().getItem(position);
                 if (o instanceof Map) {
                     Map map = (Map) o;
-                    Intent in = new Intent(BookmarkActivity.this, MainActivity.class);
+                    Intent in = new Intent(BookmarkActivity.this, UserActivity.class);
                     in.putExtra("url", String.valueOf(map.get(TAG_LINK)));
                     in.putExtra("title", String.valueOf(map.get(TAG_TITLE)));
                     startActivity(in);

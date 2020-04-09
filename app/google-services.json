@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "719962911071",
+    "firebase_url": "https://aswini-ecil.firebaseio.com",
+    "project_id": "aswini-ecil",
+    "storage_bucket": "aswini-ecil.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719962911071:android:4ff167fe252379d99786ea",
+        "android_client_info": {
+          "package_name": "in.co.ecil.aswini_apk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "719962911071-rr3r1lkep4ejt0k76bqr34tljs1gp1g1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.co.ecil.aswini_apk",
+            "certificate_hash": "a184b4c2a93a97f6e71e4f1fcb4cc61faed57b4f"
+          }
+        },
+        {
+          "client_id": "719962911071-1aue0mnfhapm1q61kkkm7vg2tdl9lr69.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADEDZgvtgBuRue1C-O6tKtlGaaDWoURFY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "719962911071-1aue0mnfhapm1q61kkkm7vg2tdl9lr69.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
