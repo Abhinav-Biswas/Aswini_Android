@@ -237,7 +237,7 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
                         Toast.LENGTH_LONG).show();
             }});
 
-      /*  //App Update Check
+        //App Update Check
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String check_url ="https://abhinav-biswas.github.io/aswini.github.io/";
@@ -283,7 +283,7 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
 
         // Add the request to the RequestQueue.
         stringRequest.setShouldCache(false);
-        queue.add(stringRequest);*/
+        queue.add(stringRequest);
 
         if (current_url.contains("home")) {
             //webview.loadDataWithBaseURL("file:///android_res/drawable/", html1, "text/html", "utf-8", null);
@@ -428,21 +428,12 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
                         "document.getElementsByTagName('td')[0].style.display = 'none';" +
                         "void 0;" +
                         "}) ();");
-            } else if (url.contains("payslips.ecil.co.in/index")) {
+            } else if (url.contains("payslips.ecil.co.in")) {
                 view.loadUrl("javascript:" +
                         "(function() {" +
                         //"document.getElementsByTagName('body')[0].style.backgroundImage = 'none';" +
                         "document.getElementsByTagName('form')[0].style.width = 'none';" +
                         "document.getElementsByTagName('marquee')[0].style.display = 'none';" +
-                        "void 0;" +
-                        "}) ();");
-            } else if (url.contains("payslips.ecil.co.in/display")) {
-                view.loadUrl("javascript:" +
-                        "(function() {" +
-                        "document.getElementsByTagName('table')[0].style.width = 'auto';" +
-                        "document.getElementsByTagName('form')[0].style.width = 'none';" +
-                        "document.getElementsByTagName('button')[1].style.display = 'none';" +
-                        //"document.getElementsByTagName('table')[1].style.width = 'none';" +
                         "void 0;" +
                         "}) ();");
             } else if (url.contains("gstn.ecil.co.in:8080")){
@@ -453,6 +444,17 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
                         "document.getElementsByTagName('form')[0].style.width = 'none';" +
                         "document.getElementsByTagName('marquee')[0].style.display = 'none';" +
                         "document.getElementsByTagName('marquee')[1].style.display = 'none';" +
+                        "void 0;" +
+                        "}) ();");
+            }
+
+            if (url.contains("payslips.ecil.co.in/display")) {
+                view.loadUrl("javascript:" +
+                        "(function() {" +
+                        "document.getElementsByTagName('table')[0].style.width = 'auto';" +
+                        "document.getElementsByTagName('form')[0].style.width = 'none';" +
+                        "document.getElementsByTagName('button')[1].style.display = 'none';" +
+                        //"document.getElementsByTagName('table')[1].style.width = 'none';" +
                         "void 0;" +
                         "}) ();");
             }
